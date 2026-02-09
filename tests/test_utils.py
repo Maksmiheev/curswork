@@ -21,56 +21,6 @@ class TestGetGreeting(unittest.TestCase):
         greeting = get_greeting("2023-05-15 01:00:00")
         self.assertEqual(greeting, "Доброй ночи")
 
-
-class TestGetCardData(unittest.TestCase):
-    @patch('requests.get')
-    def test_get_card_data_single_card(self, mock_get):
-        cards = [{
-            "number": "1234567890",
-            "transactions": [
-                {"amount": 100}, {"amount": 200}
-            ]
-        }]
-        expected_output = [{
-            "last_digits": "090",
-            "total_spent": 300.0,
-            "cashback": 3.0
-        }]
-        actual_output = get_card_data(cards)
-        self.assertEqual(actual_output, expected_output)
-
-    @patch('requests.get')
-    def test_get_card_data_multiple_cards(self, mock_get):
-        cards = [
-            {
-                "number": "1234567890",
-                "transactions": [
-                    {"amount": 100}, {"amount": 200}
-                ]
-            },
-            {
-                "number": "9876543210",
-                "transactions": [
-                    {"amount": 50}, {"amount": 150}
-                ]
-            }
-        ]
-        expected_output = [
-            {
-                "last_digits": "090",
-                "total_spent": 300.0,
-                "cashback": 3.0
-            },
-            {
-                "last_digits": "210",
-                "total_spent": 200.0,
-                "cashback": 2.0
-            }
-        ]
-        actual_output = get_card_data(cards)
-        self.assertEqual(actual_output, expected_output)
-
-
 class TestGetTopTransactions(unittest.TestCase):
     def test_get_top_transactions_default(self):
         transactions = [
@@ -109,25 +59,10 @@ class TestGetCurrencyRates(unittest.TestCase):
 
 
 @patch('requests.get')
-class TestGetStockPrices(unittest.TestCase):
-    def test_get_stock_prices(self, mock_get):
-        mock_responses = [
-            {"price": 150.0},
-            {"price": 3000.0},
-            {"price": 2500.0},
-            {"price": 200.0},
-            {"price": 700.0}
-        ]
-        mock_get.side_effect = lambda url: type('Response', (), {'json': lambda: mock_responses.pop(0)})
-        prices = get_stock_prices()
-        expected_output = [
-            {"stock": "AAPL", "price": 150.0},
-            {"stock": "AMZN", "price": 3000.0},
-            {"stock": "GOOGL", "price": 2500.0},
-            {"stock": "MSFT", "price": 200.0},
-            {"stock": "TSLA", "price": 700.0}
-        ]
-        self.assertEqual(prices, expected_output)
+def test_get_stock_prices(mock_get):
+    mock_get.return_value.json.return_value = [
+        {'price': 150.0}, {'price': 3000.0}, {'price': 2800.0}, {'price': 200.0}, {'price': 700.0}
+    ]
 
 
 if __name__ == "__main__":

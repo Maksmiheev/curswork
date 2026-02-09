@@ -1,7 +1,6 @@
 import unittest
 from unittest.mock import patch
-from src.views import app
-
+from src.app import app
 
 class TestHomeEndpoint(unittest.TestCase):
     def setUp(self):
